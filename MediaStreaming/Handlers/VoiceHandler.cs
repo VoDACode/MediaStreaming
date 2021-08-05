@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net.WebSockets;
 using System.Threading;
 
-namespace MediaStreamingService.Handlers
+namespace MediaStreaming.Handlers
 {
     public class VoiceHandler : Handler
     {

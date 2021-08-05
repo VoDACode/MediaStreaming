@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Linq;
 
-namespace MediaStreamingService.Handlers
+namespace MediaStreaming.Handlers
 {
     public class StreamViewHandler : Handler
     {

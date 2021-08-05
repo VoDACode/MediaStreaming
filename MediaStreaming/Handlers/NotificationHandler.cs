@@ -7,7 +7,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MediaStreamingService.Handlers
+namespace MediaStreaming.Handlers
 {
     public class NotificationHandler : Handler
     {

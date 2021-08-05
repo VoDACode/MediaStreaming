@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MediaStreamingService
+namespace MediaStreaming
 {
     public class ScreenSharingStream
     {

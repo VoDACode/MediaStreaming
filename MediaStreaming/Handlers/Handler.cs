@@ -1,4 +1,4 @@
-﻿using MediaStreamingService.Modules;
+﻿using MediaStreaming.Modules;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Net.WebSockets;
 using System.Threading;
 
-namespace MediaStreamingService.Handlers
+namespace MediaStreaming.Handlers
 {
     public abstract class Handler
     {

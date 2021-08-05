@@ -24,7 +24,8 @@ class MediaStreaming extends Client{
         this.host = host;
         let url = `https://${this.host}/logon`
         $.post(url, (data) => {
-            this.id = data.id;
+            console.log(data);
+            this.id = data.Id;
             this.voiceStream = new VoiceStream(this.host, this.room, this.id);
             this.screenStream = new ScreenStream(this.host, this.room, this.id);
             this.notificationStream = new WebSocket(`wss://${this.host}/notification?id=${this.id}`);

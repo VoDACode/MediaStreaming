@@ -1,6 +1,6 @@
 ﻿using System.Net.WebSockets;
 
-namespace MediaStreamingService
+namespace MediaStreaming
 {
     public class StreamSocket
     {

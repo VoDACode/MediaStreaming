@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MediaStreamingService.Handlers;
-using MediaStreamingService.Modules;
+using MediaStreaming.Handlers;
+using MediaStreaming.Modules;
 using Microsoft.AspNetCore.Http;
 
-namespace MediaStreamingService
+namespace MediaStreaming
 {
     public delegate bool EventAuth(HttpContext context);
     public class MediaStreaming
     {
         private static List<ScreenSharingStream> screenSharingViewers = new List<ScreenSharingStream>();
-        private static NotificationModule notification; 
+        private static NotificationModule notification;
         private static List<Client> clients = new List<Client>();
         private readonly RequestDelegate _next;
         private string path;
@@ -25,12 +25,12 @@ namespace MediaStreamingService
             if (path.Last() != '/')
                 path = $"/{path}";
             this.path = path;
-            if(auth == null)
+            if (auth == null)
             {
-               auth = new EventAuth((HttpContext context) =>
-               {
-                   return true;
-               });
+                auth = new EventAuth((HttpContext context) =>
+                {
+                    return true;
+                });
             }
             IsAuth = auth;
             handlers.Add(new VoiceHandler());
@@ -48,10 +48,10 @@ namespace MediaStreamingService
 
         public async Task InvokeAsync(HttpContext context)
         {
-            if(!isValidRootPath(context.Request.Path))
+            if (!isValidRootPath(context.Request.Path))
             {
-               await _next.Invoke(context);
-               return;
+                await _next.Invoke(context);
+                return;
             }
 
             if (!IsAuth(context))
@@ -61,7 +61,7 @@ namespace MediaStreamingService
                 return;
             }
 
-            foreach(var handler in handlers)
+            foreach (var handler in handlers)
             {
                 if (handler.IsValidPath(path, context.Request.Path))
                 {
@@ -70,10 +70,10 @@ namespace MediaStreamingService
                     var remoweClients = clients.Where(p => p.Sockets.Where(p => p.Name != "notification")
                                                             .Count(s => s.Socket.CloseStatus.HasValue) >= p.Sockets.Count(p => p.Name != "notification") &&
                                                         (p.LastActive - p.CreateAt) > TimeSpan.FromMinutes(10));
-                    foreach(var rc in remoweClients)
+                    foreach (var rc in remoweClients)
                     {
                         var subClients = notification.Subscriptions.Where(p => p.Client.Id == rc.Id);
-                        foreach(var subClient in subClients)
+                        foreach (var subClient in subClients)
                             notification.Subscriptions.Remove(subClient);
 
                         clients.Remove(rc);

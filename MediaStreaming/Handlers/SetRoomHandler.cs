@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace MediaStreamingService.Handlers
+namespace MediaStreaming.Handlers
 {
     public class SetRoomHandler : Handler
     {

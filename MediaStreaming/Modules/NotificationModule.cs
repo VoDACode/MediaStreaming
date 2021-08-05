@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MediaStreamingService.Modules
+namespace MediaStreaming.Modules
 {
     sealed public class NotificationModule
     {
