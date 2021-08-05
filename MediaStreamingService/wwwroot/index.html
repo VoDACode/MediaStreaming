@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="libs/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div>
+        <label>Host:</label>
+        <input type="text" id="host" size="40" />
+        <label>Port:</label>
+        <input type="number" id="port" size="8" />
+        <button onclick="saveHost()">Save</button>
+        <br>
+        <label>WS URL: </label>
+        <input type="text" id="wsUrl" disabled value="/ws" size="40" />
+        <br>
+        <label>Connect URL: </label>
+        <input type="text" id="connectUrl" disabled size="40" />
+        <br>
+        <label>Room: </label>
+        <input type="text" id="roomName">
+        <button id="setRoomButton">Set room!</button>
+    </div>
+    <hr>
+    <div>
+        <label>Voice</label>
+        <button type="button" class="btn btn-success" onclick="mediaStreaming.voiceStream.start()">Start</button>
+        <button type="button" class="btn btn-success" onclick="mediaStreaming.voiceStream.stop()">Close</button>
+    </div>
+    <hr>
+    <div>
+        <label>Screen</label>
+        <button type="button" class="btn btn-success" onclick="mediaStreaming.screenStream.start()">Show</button>
+        <button type="button" class="btn btn-success" onclick="mediaStreaming.screenStream.stop()">Close</button>
+        <div id="videoBox">
+        </div>
+    </div>
+    <hr>
+    <div>
+        <label>Sub to:</label>
+        <input id="subRoomName" size="40">
+        <button id="subButton">Sub!</button>
+        <br>
+        <label>List</label>
+        <select id="subRoomsList"></select>
+    </div>
+</body>
+<script src="./main.js"></script>
+</html>
