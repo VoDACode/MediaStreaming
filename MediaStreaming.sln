@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31402.337
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaStreaming", "MediaStreaming\MediaStreaming.csproj", "{BF6B2922-0F46-4B28-9EC4-5CF3DD876175}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaStreamingClient", "Examples\MediaStreamingClient\MediaStreamingClient.csproj", "{3D029070-C596-43F3-BEB6-85038D0C0F0E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaStreamingService", "Examples\MediaStreamingService\MediaStreamingService.csproj", "{963AB792-A86D-4291-BE11-216FAFD16EDF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaStreamingClientCore", "MediaStreamingClientCore\MediaStreamingClientCore.csproj", "{2579CD5A-ADF5-4E0C-A818-4DCDE14B2DBE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +15,18 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BF6B2922-0F46-4B28-9EC4-5CF3DD876175}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BF6B2922-0F46-4B28-9EC4-5CF3DD876175}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BF6B2922-0F46-4B28-9EC4-5CF3DD876175}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BF6B2922-0F46-4B28-9EC4-5CF3DD876175}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D029070-C596-43F3-BEB6-85038D0C0F0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D029070-C596-43F3-BEB6-85038D0C0F0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D029070-C596-43F3-BEB6-85038D0C0F0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D029070-C596-43F3-BEB6-85038D0C0F0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{963AB792-A86D-4291-BE11-216FAFD16EDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{963AB792-A86D-4291-BE11-216FAFD16EDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{963AB792-A86D-4291-BE11-216FAFD16EDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{963AB792-A86D-4291-BE11-216FAFD16EDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2579CD5A-ADF5-4E0C-A818-4DCDE14B2DBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2579CD5A-ADF5-4E0C-A818-4DCDE14B2DBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2579CD5A-ADF5-4E0C-A818-4DCDE14B2DBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2579CD5A-ADF5-4E0C-A818-4DCDE14B2DBE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
