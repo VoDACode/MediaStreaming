@@ -24,7 +24,6 @@ class MediaStreaming extends Client{
         this.host = host;
         let url = `https://${this.host}/logon`
         $.post(url, (data) => {
-            console.log(data);
             this.id = data.Id;
             this.voiceStream = new VoiceStream(this.host, this.room, this.id);
             this.screenStream = new ScreenStream(this.host, this.room, this.id);
@@ -135,6 +134,7 @@ class VoiceStream extends Client{
     OnMessageEvent = async (data) => {
         const arr = new Float32Array(await (new Response(data.data)).arrayBuffer());
         this.ChunkArray.push(arr);
+        console.log(arr);
         await this.playChunks();
     }
 
@@ -185,7 +185,6 @@ class VoiceStream extends Client{
         if(avg <= 1 && avg >= -0.05 && avg !== 0) {
             let arr = new Blob([microphone_output_buffer])
             this.wsVoice.send(arr);
-            console.log(arr);
         }
     }
 }
