@@ -15,10 +15,23 @@ namespace MediaStreamingClientCore.Modules
         private WaveInEvent input;
         private WaveOutEvent output;
         private BufferedWaveProvider bufferStream;
+        private ClientWebSocket VoiceStream;
+        private double sensitivity = 0.02;
+        public double Sensitivity
+        {
+            get => sensitivity;
+            set
+            {
+                if (value <= 0)
+                    return;
+                sensitivity = value;
+            }
+        }
 
         public VoiceModule(string ConnectWsHost, ref Client client)
             : base(ConnectWsHost, ref client)
         {
+            VoiceStream = new ClientWebSocket();
             debug = new DebugData("127.0.0.1", 9090);
         }
 
@@ -29,19 +42,25 @@ namespace MediaStreamingClientCore.Modules
             //создаем поток для записи нашей речи
             input = new WaveInEvent();
             //определяем его формат - частота дискретизации 22000 Гц, ширина сэмпла - 16 бит, 1 канал - моно
-            input.WaveFormat = new WaveFormat(22000, 16, 1);
+            input.WaveFormat = new WaveFormat(32000, 1);
             //добавляем код обработки нашего голоса, поступающего на микрофон
             input.DataAvailable += Voice_Input;
+            input.BufferMilliseconds = 20;
             //создаем поток для прослушивания входящего звука
             output = new WaveOutEvent();
             //создаем поток для буферного потока и определяем у него такой же формат как и потока с микрофона
-            bufferStream = new BufferedWaveProvider(new WaveFormat(22000, 16, 1));
+            bufferStream = new BufferedWaveProvider(new WaveFormat(32000, 1));
             //привязываем поток входящего звука к буферному потоку
             output.Init(bufferStream);
             //сокет для отправки звука
 
             OnReceiveData += VoiceModule_OnReceiveData;
-            base.Start();
+
+            Socket.ConnectAsync(new Uri($"{ConnectWsRootUrl}/voice/listen?id={Client.Id}&token={Token}&room={Client.Room}"), CancellationToken.None).Wait();
+            VoiceStream.ConnectAsync(new Uri($"{ConnectWsRootUrl}/voice/start?id={Client.Id}&token={Token}&room={Client.Room}"), CancellationToken.None).Wait();
+            _start();
+
+            //base.Start();
             output.Play();
 
             input.StartRecording();
@@ -65,12 +84,11 @@ namespace MediaStreamingClientCore.Modules
             base.Stop();
         }
 
-        private void VoiceModule_OnReceiveData(ClientWebSocket socket, byte[] data)
+        private void VoiceModule_OnReceiveData(ClientWebSocket socket, byte[] data, int offset, int count)
         {
             try
             {
-                
-                bufferStream.AddSamples(data, 0, data.Length);
+                bufferStream.AddSamples(data, offset, count);
             }
             catch
             { }
@@ -80,10 +98,10 @@ namespace MediaStreamingClientCore.Modules
         {
             try
             {
-                if (ProcessData(e, 0.02))
+                if (ProcessData(e, sensitivity))
                 {
+                    VoiceStream.SendAsync(e.Buffer, WebSocketMessageType.Binary, true, CancellationToken.None);
                     debug.Send(e.Buffer);
-                    Socket.SendAsync(e.Buffer, WebSocketMessageType.Binary, true, CancellationToken.None);
                 }
             }
             catch (Exception ex)
@@ -92,7 +110,6 @@ namespace MediaStreamingClientCore.Modules
         }
         private bool ProcessData(WaveInEventArgs e, double porog = 0.02)
         {
-            bool result = false;
             bool Tr = false;
             double Sum2 = 0;
             int Count = e.BytesRecorded / 2;
@@ -105,11 +122,7 @@ namespace MediaStreamingClientCore.Modules
                     Tr = true;
             }
             Sum2 /= Count;
-            if (Tr || Sum2 > porog)
-                result = true;
-            else
-                result = false;
-            return result;
+            return (Tr || Sum2 > porog);
         }
     }
 }

@@ -10,7 +10,7 @@ using MediaStreamingClientCore.Modules;
 
 namespace MediaStreamingClientCore
 {
-    public delegate void MediaNotification(ClientWebSocket socket, byte[] data);
+    public delegate void MediaNotification(ClientWebSocket socket, byte[] data, int offset, int count);
     public class MediaStreamingClient
     {
         private bool _isHttps;
@@ -95,9 +95,9 @@ namespace MediaStreamingClientCore
 
         public bool SetRoom(string room) 
         {
-            var result = api.SetRoom(room, client.id);
+            var result = api.SetRoom(room, client.Id);
             if (result)
-                client.room = room;
+                client.Room = room;
             return result;
         }
         

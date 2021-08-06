@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace MediaStreaming.Handlers
 {
@@ -148,41 +149,45 @@ namespace MediaStreaming.Handlers
             HttpContext.Response.WriteAsync(message);
         }
 
-        protected void SendToOther(string streamName, uint bufferSize = 8)
+        protected void SendToOther(string InputSocket, string OutputSocket, int bufferSize = 1024 * 8)
         {
-            if (Caller.GetStream(streamName) == null)
-                throw new Exception($"Not found stream out name '{streamName}'.");
+            if (Caller.GetStream(InputSocket) == null)
+                throw new Exception($"Not found stream out name '{InputSocket}'.");
 
-            var stream = Caller.GetStream(streamName);
+            var stream = Caller.GetStream(InputSocket);
             var socket = stream.Socket;
 
-            var buffer = new byte[1024 * bufferSize];
+            var buffer = new byte[bufferSize];
             WebSocketReceiveResult result = socket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None).Result;
             while (!result.CloseStatus.HasValue)
             {
-                var addressees = Clients.Where(p => p.Room == Caller.Room &&
-                                                    p.Sockets.Any(s => s.Name == stream.Name) &&
-                                                    p.Id != Caller.Id);
-                foreach (var addressee in addressees)
+
+                Task.Factory.StartNew(() =>
                 {
-                    try
+                    var addressees = Clients.Where(p => p.Room == Caller.Room &&
+                                    p.Sockets.Any(s => s.Name == stream.Name) &&
+                                    p.Id != Caller.Id);
+                    foreach (var addressee in addressees)
                     {
-                        addressee.GetStream(streamName).Socket.SendAsync(new ArraySegment<byte>(buffer, 0, result.Count), result.MessageType, result.EndOfMessage, CancellationToken.None);
+                        try
+                        {
+                            addressee.GetStream(OutputSocket).Socket.SendAsync(new ArraySegment<byte>(buffer, 0, result.Count), result.MessageType, result.EndOfMessage, CancellationToken.None);
+                        }
+                        catch
+                        {
+                            if (!addressee.GetStream(OutputSocket).Socket.CloseStatus.HasValue)
+                                addressee.GetStream(OutputSocket).Socket.CloseAsync(WebSocketCloseStatus.EndpointUnavailable, null, CancellationToken.None);
+                            addressee.Sockets.Remove(addressee.GetStream(OutputSocket));
+                        }
                     }
-                    catch
-                    {
-                        if (!addressee.GetStream(streamName).Socket.CloseStatus.HasValue)
-                            addressee.GetStream(streamName).Socket.CloseAsync(WebSocketCloseStatus.EndpointUnavailable, null, CancellationToken.None);
-                        addressee.Sockets.Remove(addressee.GetStream(streamName));
-                    }
-                }
+                });
                 result = socket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None).Result;
             }
             Caller.Sockets.Remove(stream);
         }
         protected void WaitStream()
         {
-            var buffer = new byte[1024 * 1];
+            var buffer = new byte[1024];
             WebSocketReceiveResult result = Socket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None).Result;
             while (!result.CloseStatus.HasValue)
             {

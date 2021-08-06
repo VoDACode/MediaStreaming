@@ -32,7 +32,7 @@ namespace MediaStreaming.Handlers
                 Notification.CallRoom(Caller.Room, Caller);
             }
 
-            SendToOther("voice-listen", 16);
+            SendToOther("voice", "voice-listen", 98304);
             Notification.EndCall(Caller.Room, Caller);
             Caller.Room = null;
         }

@@ -26,6 +26,8 @@ namespace MediaStreamingClient
         public MainWindow()
         {
             InitializeComponent();
+            //44326
+            //5300
             stream = new MediaStreamingClientCore.MediaStreamingClient(true, "localhost", 5300, "ws");
             stream.IgnoreSSL = true;
             //Main
@@ -78,7 +80,7 @@ namespace MediaStreamingClient
             setStatus(true, ref ItemButton_Voice_Start, ref ItemButton_Voice_Stop, ref ItemLable_Voice_Status));
         }
 
-        private void Notification_OnReceiveData(ClientWebSocket socket, byte[] data)
+        private void Notification_OnReceiveData(ClientWebSocket socket, byte[] data, int offset, int count)
         {
             Dispatcher.Invoke(() =>
             {
@@ -136,6 +138,23 @@ namespace MediaStreamingClient
             start.IsEnabled = !isStart;
             stop.IsEnabled = isStart;
             status.Content = isStart ? "Done connect!" : "Disconnect!";
+        }
+
+        private void ItemSlider_SetSensitivity_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            ItemTextBox_Sensitivity.Text = Math.Round(e.NewValue, 8).ToString();
+        }
+
+        private void ItemTextBox_Sensitivity_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            double number = 0;
+            if (double.TryParse((e.OriginalSource as TextBox).Text.ToString(), out number))
+            {
+                if(ItemSlider_SetSensitivity != null)
+                    ItemSlider_SetSensitivity.Value = number;
+                if (stream != null && stream.Voice != null)
+                    stream.Voice.Sensitivity = Math.Round(number, 8);
+            }
         }
     }
 }

@@ -24,7 +24,7 @@ namespace MediaStreamingClientCore.Modules
 
         protected Thread ListeningThread { private set; get; }
 
-        protected string GetConnectWsUrl => $"{ConnectWsRootUrl}/{ModuleName}?id={client.id}&token={_token}&room={client.room}";
+        protected string GetConnectWsUrl => $"{ConnectWsRootUrl}/{ModuleName}?id={client.Id}&token={_token}&room={client.Room}";
 
         public string ConnectWsRootUrl => _connectWsRootUrl;
         public bool Status => _status;
@@ -70,21 +70,24 @@ namespace MediaStreamingClientCore.Modules
             OnStop?.Invoke();
             _status = false;
         }
-        private async void startReadStream()
+        private Task startReadStream()
         {
-            try
+            return Task.Factory.StartNew(() =>
             {
-                var buffer = new byte[4400];
-                WebSocketReceiveResult result = await Socket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-                while (!result.CloseStatus.HasValue)
+                try
                 {
-                    OnReceiveData?.Invoke(Socket, buffer);
-                    result = await Socket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                    var buffer = new byte[1024 * 96];
+                    WebSocketReceiveResult result = Socket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None).Result;
+                    while (!result.CloseStatus.HasValue)
+                    {
+                        OnReceiveData?.Invoke(Socket, buffer, 0, result.Count);
+                        result = Socket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None).Result;
+                    }
                 }
-            }
-            catch
-            {}
-            _stop();
+                catch(Exception ex)
+                { }
+                _stop();
+            });    
         }
     }
 }

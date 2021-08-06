@@ -4,14 +4,14 @@ namespace MediaStreamingClientCore
 {
     public class Client
     {
-        public string id { get; }
+        public string Id { get; }
         private DateTime _lastActive;
-        public string room { get; set; }
+        public string Room { get; set; }
         public DateTime CreateAt { get; }
         public DateTime LastActive { get => _lastActive; }
         public Client(string Id)
         {
-            this.id = Id;
+            this.Id = Id;
             _lastActive = DateTime.Now;
             CreateAt = DateTime.Now;
         }
