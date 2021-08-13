@@ -202,8 +202,8 @@
                                 <ColumnDefinition Width="auto"/>
                                 <ColumnDefinition Width="auto"/>
                             </Grid.ColumnDefinitions>
-                            <Button Grid.Column="0" Margin="2" Width="100" Name="ItemButton_ScreenSharing_Start">Start</Button>
-                            <Button Grid.Column="1" Margin="2" Width="100" Name="ItemButton_ScreenSharing_Stop">Stop</Button>
+                            <Button Grid.Column="0" Margin="2" Width="100" Name="ItemButton_ScreenSharing_Start" Click="ItemButton_ScreenSharing_Start_Click">Start</Button>
+                            <Button Grid.Column="1" Margin="2" Width="100" Name="ItemButton_ScreenSharing_Stop" Click="ItemButton_ScreenSharing_Stop_Click">Stop</Button>
                         </Grid>
                         <Grid Grid.Row="1" Margin="5">
                             <Grid.ColumnDefinitions>
@@ -220,7 +220,7 @@
                             <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
                         <Label Grid.Row="0">Preview</Label>
-                        <MediaElement Grid.Row="1" Name="ItemMediaElement_ScreenSharing_Preview"/>
+                        <Image Grid.Row="1" Name="ItemImage_ScreenSharing_Preview"/>
                     </Grid>
                 </Grid>
             </Grid>

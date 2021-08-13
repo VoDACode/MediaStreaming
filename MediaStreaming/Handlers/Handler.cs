@@ -201,7 +201,7 @@ namespace MediaStreaming.Handlers
             var stream = screenSharingStream.Stream;
             var socket = stream.Socket;
             var streamName = $"stream-view-{screenSharingStream.Id}";
-            var buffer = new byte[1024 * 16];
+            var buffer = new byte[1024 * 116];
             WebSocketReceiveResult result = socket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None).Result;
             while (!result.CloseStatus.HasValue)
             {

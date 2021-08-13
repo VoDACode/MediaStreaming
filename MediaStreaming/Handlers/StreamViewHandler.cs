@@ -5,7 +5,7 @@ namespace MediaStreaming.Handlers
 {
     public class StreamViewHandler : Handler
     {
-        public override string Path => "stream-view";
+        public override string Path => "screen/view";
 
         public override bool RequireID => true;
 
@@ -24,15 +24,24 @@ namespace MediaStreaming.Handlers
                 HttpContext.Response.WriteAsync("Incorrect parameter 'streamId'!");
                 return;
             }
+
             if(!ScreenSharingStreams.Any(p => p.Id == streamId))
             {
                 HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
                 HttpContext.Response.WriteAsync("Stream not found!");
                 return;
             }
-            Caller.Sockets.Add(new StreamSocket($"stream-view-{streamId}", Socket));
+
+            StreamSocket streamView = new StreamSocket($"stream-view-{streamId}", Socket);
+            Caller.Sockets.Add(streamView);
+
             ScreenSharingStreams.FirstOrDefault(p => p.Id == streamId).Viewers.Add(Caller);
             WaitStream();
+            if (ScreenSharingStreams.Any(p => p.Id == streamId))
+            {
+                ScreenSharingStreams.FirstOrDefault(p => p.Id == streamId).Viewers.Remove(Caller);
+            }
+            Caller.Sockets.Remove(streamView);
         }
     }
 }

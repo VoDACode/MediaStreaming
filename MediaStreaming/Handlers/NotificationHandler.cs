@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
@@ -19,12 +20,12 @@ namespace MediaStreaming.Handlers
 
         public override bool RequireWebSocket => true;
 
-        public override string Method => "GET";
+        public override string Method => HttpMethods.Get;
 
         protected override void Execute()
         {
             Caller.Sockets.Add(new StreamSocket("notification", Socket));
-            Socket.SendAsync(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new { text = "OK" })), WebSocketMessageType.Text, true, CancellationToken.None);
+            Socket.SendAsync(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new { data = new { type = "start", data = "OK" } })), WebSocketMessageType.Text, true, CancellationToken.None);
             WaitStream();
             Clients.Remove(Caller);
         }

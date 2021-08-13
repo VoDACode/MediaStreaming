@@ -1,18 +1,97 @@
-﻿using System;
+﻿using MediaStreamingClientCore.Models;
+using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
-using System.Text;
+using System.Net.Security;
+using System.Net.WebSockets;
+using System.Security.Cryptography.X509Certificates;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace MediaStreamingClientCore.Modules
 {
+    public delegate void AvtionUpdateScreen(Bitmap data);
     public sealed class ScreenSharingModule : Module
     {
         protected override string ModuleName => "screen";
+        private Screen selectedScreen;
+        private Bitmap lastScreenData;
+
+        private ClientWebSocket ScreenStream = new ClientWebSocket();
+
+        public List<ViewStreamModel> ViewStreams { get; } = new List<ViewStreamModel>();
+
+        public Screen[] ScreenList { get => Screen.AllScreens; }
+        public bool IsViewPreview { get; set; } = true;
+
+        public event AvtionUpdateScreen UpdatePreview;
+
         public ScreenSharingModule(string ConnectWsHost, ref Client client)
             : base(ConnectWsHost, ref client)
         {
+            ScreenStream.Options.RemoteCertificateValidationCallback = (object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) => IgnoreSSL;
+        }
 
+        public void SetScreen(Screen screen)
+        {
+            if (!ScreenList.Any(p => p == screen))
+                throw new Exception("Screen not find!");
+            selectedScreen = screen;
+        }
+
+        public override void Start()
+        {
+            ScreenStream.ConnectAsync(new Uri($"{ConnectWsRootUrl}/screen/stream?id={Client.Id}&token={Token}&room={Client.Room}"), CancellationToken.None).Wait();
+            //Socket.ConnectAsync(new Uri($"{ConnectWsRootUrl}/screen/view?id={Client.Id}&token={Token}&room={Client.Room}"), CancellationToken.None).Wait();
+            _start();
+            StartStream();
+        }
+
+        public ViewStreamModel ViewSream(string id)
+        {
+            var viewStream = new ViewStreamModel(id, Client, ConnectWsRootUrl, Token);
+            viewStream.IgnoreSSL = IgnoreSSL;
+            ViewStreams.Add(viewStream);
+            return viewStream;
+        }
+
+        private Task StartStream()
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                while (Status)
+                {
+                    var screen = GetScreen();
+
+                    if (screen != lastScreenData)
+                    {
+                        if (IsViewPreview)
+                            UpdatePreview?.Invoke(screen);
+
+                        using (var stream = new MemoryStream())
+                        {
+                            screen.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+                            var arr = stream.ToArray();
+                            ScreenStream.SendAsync(arr, WebSocketMessageType.Binary, true, CancellationToken.None).Wait();
+                        }
+                        lastScreenData = screen;
+                    }
+                    Task.Delay(50);
+                }
+            });
+        }
+
+        private Bitmap GetScreen()
+        {
+            var bitmap = new Bitmap(selectedScreen.WorkingArea.Width, selectedScreen.WorkingArea.Height);
+            using (var graphics = Graphics.FromImage(bitmap))
+            {
+                graphics.CopyFromScreen(new Point(0, 0), new Point(0, 0), new Size(selectedScreen.WorkingArea.Width, selectedScreen.WorkingArea.Height));
+            }
+            return bitmap;
         }
     }
 }

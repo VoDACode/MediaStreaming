@@ -4,6 +4,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using MediaStreamingClientCore.Models;
 using NAudio.Wave;
 
 namespace MediaStreamingClientCore.Modules
@@ -59,7 +60,7 @@ namespace MediaStreamingClientCore.Modules
             Socket.ConnectAsync(new Uri($"{ConnectWsRootUrl}/voice/listen?id={Client.Id}&token={Token}&room={Client.Room}"), CancellationToken.None).Wait();
             VoiceStream.ConnectAsync(new Uri($"{ConnectWsRootUrl}/voice/start?id={Client.Id}&token={Token}&room={Client.Room}"), CancellationToken.None).Wait();
             _start();
-
+            startReadStream();
             //base.Start();
             output.Play();
 
@@ -84,11 +85,11 @@ namespace MediaStreamingClientCore.Modules
             base.Stop();
         }
 
-        private void VoiceModule_OnReceiveData(ClientWebSocket socket, byte[] data, int offset, int count)
+        private void VoiceModule_OnReceiveData(ClientWebSocket socket, BytesList data)
         {
             try
             {
-                bufferStream.AddSamples(data, offset, count);
+                bufferStream.AddSamples(data.NewBuffer, 0, data.NewBuffer.Length);
             }
             catch
             { }

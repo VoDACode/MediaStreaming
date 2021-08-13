@@ -23,6 +23,7 @@ namespace MediaStreaming.Handlers
             Caller.Sockets.Add(new StreamSocket("video", Socket));
             Notification.StartStreamVideo(Caller);
             SendToOther("video", "video-listen", 16*1024);
+            Notification.EndStreamVideo(Caller);
         }
     }
 }

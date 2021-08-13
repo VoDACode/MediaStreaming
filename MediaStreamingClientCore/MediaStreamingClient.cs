@@ -7,10 +7,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Text;
 using MediaStreamingClientCore.Modules;
+using MediaStreamingClientCore.Models;
 
 namespace MediaStreamingClientCore
 {
-    public delegate void MediaNotification(ClientWebSocket socket, byte[] data, int offset, int count);
+    public delegate void MediaNotification(ClientWebSocket socket, BytesList data);
     public class MediaStreamingClient
     {
         private bool _isHttps;
@@ -36,9 +37,16 @@ namespace MediaStreamingClientCore
 
         public bool IgnoreSSL { get => _ignoreSSL; 
             set{
-                if (_ignoreSSL == value)
-                    return;
+
                 api.IgnoreSSL = value;
+                if(notification != null)
+                    notification.IgnoreSSL = value;
+                if(voice != null)
+                    voice.IgnoreSSL = value;
+                if(video != null)
+                    video.IgnoreSSL = value;
+                if(screenSharing != null)
+                    screenSharing.IgnoreSSL = value;
                 _ignoreSSL = value;
             }
         }
@@ -67,6 +75,7 @@ namespace MediaStreamingClientCore
             _servicePath = servicePath;
             _token = token;
             api = new ApiClient(ConnectHttpRootUrl, _token);
+
         }
 
         public void Connect()
@@ -77,6 +86,8 @@ namespace MediaStreamingClientCore
             voice = new VoiceModule(ConnectWsRootUrl, ref client);
             video = new VideoModule(ConnectWsRootUrl, ref client);
             screenSharing = new ScreenSharingModule(ConnectWsRootUrl, ref client);
+
+            IgnoreSSL = IgnoreSSL;
 
             _isConnect = true;
             OnStart?.Invoke();

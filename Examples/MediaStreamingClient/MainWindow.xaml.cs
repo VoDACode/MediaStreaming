@@ -1,5 +1,9 @@
-﻿using System;
+﻿using MediaStreamingClientCore.Models;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
@@ -23,12 +27,17 @@ namespace MediaStreamingClient
     public partial class MainWindow : Window
     {
         private MediaStreamingClientCore.MediaStreamingClient stream;
+        private Window previewWindow = new Window();
+        private System.Windows.Controls.Image previewImage = new System.Windows.Controls.Image();
+
         public MainWindow()
         {
             InitializeComponent();
             //44326
             //5300
+            //stream = new MediaStreamingClientCore.MediaStreamingClient(true, "privatevoda.space", 5300, "ws");
             stream = new MediaStreamingClientCore.MediaStreamingClient(true, "localhost", 5300, "ws");
+            //stream = new MediaStreamingClientCore.MediaStreamingClient(true, "10.0.1.20", 5300, "ws");
             stream.IgnoreSSL = true;
             //Main
             stream.OnStart += Stream_OnStart;
@@ -37,25 +46,86 @@ namespace MediaStreamingClient
 
         private void ItemButton_Connect_Click(object sender, RoutedEventArgs e)
         {
-            stream.Connect();
+            try
+            {
+                stream.Connect();
 
-            //Notification
-            stream.Notification.OnStart += Notification_OnStart;
-            stream.Notification.OnReceiveData += Notification_OnReceiveData;
-            stream.Notification.Start();
-            stream.SetRoom("main");
-            //Voice
-            stream.Voice.OnStart += Voice_OnStart;
-            stream.Voice.OnStop += Voice_OnStop;
-            //Video
-            stream.Video.OnStart += Video_OnStart;
-            stream.Video.OnStop += Video_OnStop;
-            //Screen sharing
-            stream.ScreenSharing.OnStart += ScreenSharing_OnStart;
-            stream.ScreenSharing.OnStop += ScreenSharing_OnStop;
+                //Notification
+                stream.Notification.OnStart += Notification_OnStart;
+                stream.Notification.OnReceiveData += Notification_OnReceiveData;
+                stream.Notification.OnStartScreenStream += Notification_OnStartScreenStream;
+                stream.Notification.Start();
+                stream.SetRoom("main");
+                //Voice
+                stream.Voice.OnStart += Voice_OnStart;
+                stream.Voice.OnStop += Voice_OnStop;
+                //Video
+                stream.Video.OnStart += Video_OnStart;
+                stream.Video.OnStop += Video_OnStop;
+                //Screen sharing
+                stream.ScreenSharing.OnStart += ScreenSharing_OnStart;
+                stream.ScreenSharing.OnStop += ScreenSharing_OnStop;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
         }
 
         #region Stream actions
+        private void Notification_OnStartScreenStream(NotificationModel data)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                var window = new Window();
+                ViewStreamModel viewSream = stream.ScreenSharing.ViewSream(data.JsonData["id"].ToString());
+                var img = new System.Windows.Controls.Image();
+                img.Width = 800;
+                img.Height = 600;
+                viewSream.OnReceiveData += (ClientWebSocket socket, BytesList bytes) =>
+                {
+                    previewWindow.Dispatcher.Invoke(() =>
+                    {
+                        try
+                        {
+                            BitmapImage bitmapimage = new BitmapImage();
+                            using (MemoryStream memory = new MemoryStream(bytes.NewBuffer, 0, bytes.NewBuffer.Length))
+                            {
+                                memory.Position = 0;
+                                bitmapimage.BeginInit();
+                                bitmapimage.StreamSource = memory;
+                                bitmapimage.CacheOption = BitmapCacheOption.OnLoad;
+                                bitmapimage.EndInit();
+                            }
+
+                            img.Source = bitmapimage;
+                        }
+                        catch { }
+                    });
+                };
+
+                viewSream.OnStart += () =>
+                {
+                    window.Dispatcher.Invoke(() =>
+                    {
+                        window.Content = img;
+                    });
+                };
+
+                viewSream.OnStop += () =>
+                {
+                    window.Dispatcher.Invoke(() =>
+                    {
+                        window.Close();
+                    });
+                };
+
+                window.Title = data.ClientId;
+                window.Show();
+
+                viewSream.Start();
+            });
+        }
         private void Video_OnStop()
         {
             Dispatcher.Invoke(() =>
@@ -80,11 +150,12 @@ namespace MediaStreamingClient
             setStatus(true, ref ItemButton_Voice_Start, ref ItemButton_Voice_Stop, ref ItemLable_Voice_Status));
         }
 
-        private void Notification_OnReceiveData(ClientWebSocket socket, byte[] data, int offset, int count)
+        private void Notification_OnReceiveData(ClientWebSocket socket, BytesList bytes)
         {
             Dispatcher.Invoke(() =>
             {
-                ItemStackPanel_Notification.Children.Add(new Label() { Content = Encoding.UTF8.GetString(data) });
+                var str = Encoding.UTF8.GetString(bytes.NewBuffer);
+                ItemStackPanel_Notification.Children.Add(new Label() { Content = str });
             });
         }
 
@@ -114,7 +185,8 @@ namespace MediaStreamingClient
 
         private void Notification_OnStart()
         {
-            MessageBox.Show("Connecting to 'Notification'");
+            Dispatcher.Invoke(() => 
+                ItemStackPanel_Notification.Children.Add(new Label() { Content = "Done connect!" }));
         }
         #endregion
 
@@ -155,6 +227,50 @@ namespace MediaStreamingClient
                 if (stream != null && stream.Voice != null)
                     stream.Voice.Sensitivity = Math.Round(number, 8);
             }
+        }
+
+        private void ItemButton_ScreenSharing_Start_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                previewWindow.Content = previewImage;
+                previewWindow.Title = "Me";
+                previewWindow.Show();
+                stream.ScreenSharing.UpdatePreview += ScreenSharing_UpdatePreview;
+                stream.ScreenSharing.SetScreen(stream.ScreenSharing.ScreenList.First());
+                stream.ScreenSharing.Start();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ItemButton_ScreenSharing_Start_Click", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void ScreenSharing_UpdatePreview(Bitmap data)
+        {
+            if (Dispatcher == null)
+                return;
+            Dispatcher.Invoke(() =>
+            {
+                BitmapImage bitmapimage = new BitmapImage();
+                using (MemoryStream memory = new MemoryStream())
+                {
+                    data.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
+                    memory.Position = 0;             
+                    bitmapimage.BeginInit();
+                    bitmapimage.StreamSource = memory;
+                    bitmapimage.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmapimage.EndInit();
+                }
+                previewImage.Source = bitmapimage;
+                previewImage.Width = 800;
+                previewImage.Height = 600;
+            });
+        }
+
+        private void ItemButton_ScreenSharing_Stop_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

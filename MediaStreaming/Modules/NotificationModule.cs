@@ -56,7 +56,10 @@ namespace MediaStreaming.Modules
                             data = new
                             {
                                 type = "call",
-                                caller = caller.Id,
+                                data = new
+                                {
+                                    caller = caller.Id
+                                },
                                 room = room,
                                 date = startCallDate
                             }
@@ -134,7 +137,7 @@ namespace MediaStreaming.Modules
                         type = "StartScreenStream",
                         client = client.Id,
                         date = connectDate,
-                        stream = new
+                        data = new
                         {
                             id = screenSharing.Id
                         }
@@ -159,7 +162,57 @@ namespace MediaStreaming.Modules
                     room = caller.Room,
                     data = new
                     {
-                        type = "videoStream",
+                        type = "StartVideoStream",
+                        client = caller.Id,
+                        date = connectDate
+                    }
+                };
+                recipient.NotificationStream.Socket.SendAsync(buffer: Encoding.UTF8.GetBytes(JsonSerializer.Serialize(contect)),
+                                                                   messageType: WebSocketMessageType.Text,
+                                                                   endOfMessage: true,
+                                                                   cancellationToken: CancellationToken.None);
+            }
+        }
+
+        public void EndScreenStream(string room, Client client, ScreenSharingStream screenSharing)
+        {
+            var connectDate = DateTime.Now;
+            foreach (var recipient in screenSharing.Viewers)
+            {
+                var contect = new
+                {
+                    room = room,
+                    data = new
+                    {
+                        type = "EndScreenStream",
+                        client = client.Id,
+                        date = connectDate,
+                        data = new
+                        {
+                            id = screenSharing.Id
+                        }
+                    }
+                };
+                recipient.NotificationStream.Socket.SendAsync(buffer: Encoding.UTF8.GetBytes(JsonSerializer.Serialize(contect)),
+                                                                   messageType: WebSocketMessageType.Text,
+                                                                   endOfMessage: true,
+                                                                   cancellationToken: CancellationToken.None);
+            }
+        }
+
+        public void EndStreamVideo(Client caller)
+        {
+            var recipients = Clients.Where(p => p.Id != caller.Id &&
+                                                p.Room == caller.Room);
+            var connectDate = DateTime.Now;
+            foreach (var recipient in recipients)
+            {
+                var contect = new
+                {
+                    room = caller.Room,
+                    data = new
+                    {
+                        type = "EndVideoStream",
                         client = caller.Id,
                         date = connectDate
                     }

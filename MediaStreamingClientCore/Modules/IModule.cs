@@ -14,5 +14,6 @@ namespace MediaStreamingClientCore.Modules
         public event Action OnStop;
         public bool Status { get; }
         public string ConnectWsRootUrl { get; }
+        public bool IgnoreSSL { get; set; }
     }
 }
