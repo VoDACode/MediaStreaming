@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MediaStreaming.Handlers;
+using MediaStreaming.Handlers.API;
 using MediaStreaming.Modules;
 using Microsoft.AspNetCore.Http;
 
@@ -33,9 +34,11 @@ namespace MediaStreaming
                 });
             }
             IsAuth = auth;
+
+            handlers.Add(new ScreenSharingApi());
+
             handlers.Add(new VoiceHandler());
             handlers.Add(new VoiceListeningHandler());
-            handlers.Add(new InfoHandler());
             handlers.Add(new ScreenHandler());
             handlers.Add(new LogonHandler());
             handlers.Add(new SetRoomHandler());

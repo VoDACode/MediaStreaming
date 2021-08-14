@@ -88,7 +88,7 @@ namespace MediaStreaming.Handlers
 
             Execute();
         }
-        public bool IsValidPath(string rootPath, string path)
+        public virtual bool IsValidPath(string rootPath, string path)
         {
             var tmp = path.Split('/').Where(p => !string.IsNullOrWhiteSpace(p)).ToArray();
             string myPath = "";
@@ -143,7 +143,7 @@ namespace MediaStreaming.Handlers
             return true;
         }
 
-        private void sendHttpResponse(string message, int status = StatusCodes.Status400BadRequest)
+        protected void sendHttpResponse(string message, int status = StatusCodes.Status400BadRequest)
         {
             HttpContext.Response.StatusCode = status;
             HttpContext.Response.WriteAsync(message);
