@@ -4,9 +4,9 @@ namespace MediaStreaming
 {
     public static class MediaStreamingExtensions
     {
-        public static IApplicationBuilder UseMediaStreaming(this IApplicationBuilder builder, string path, EventAuth auth = null)
+        public static IApplicationBuilder UseMediaStreaming(this IApplicationBuilder builder, string path, MediaStreamingSettings settings = null)
         {
-            return builder.UseMiddleware<MediaStreaming>(path, auth);
+            return builder.UseMiddleware<MediaStreaming>(path, settings);
         }
     }
 }

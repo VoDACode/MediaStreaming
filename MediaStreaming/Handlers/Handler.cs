@@ -17,6 +17,9 @@ namespace MediaStreaming.Handlers
         private List<ScreenSharingStream> _screenSharingStreams;
         private NotificationModule _notification;
         private WebSocket _socket;
+        private MediaStreamingSettings _settings;
+        protected string Token { get => HttpContext.Request.Query["token"]; }
+        protected MediaStreamingSettings Settings => _settings;
         /// <summary>
         /// Returns the value of the parameter 'room'.
         /// </summary>
@@ -60,8 +63,9 @@ namespace MediaStreaming.Handlers
         public abstract string Method { get; }
         protected abstract void Execute();
 
-        public void Invoke(HttpContext context, ref List<Client> clients, ref NotificationModule notification, ref List<ScreenSharingStream> screenSharingStreams)
+        public void Invoke(HttpContext context, ref List<Client> clients, ref NotificationModule notification, ref List<ScreenSharingStream> screenSharingStreams, ref MediaStreamingSettings settings)
         {
+            _settings = settings;
             _notification = notification;
             _clients = clients;
             _screenSharingStreams = screenSharingStreams;

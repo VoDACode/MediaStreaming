@@ -13,7 +13,7 @@ namespace MediaStreaming.Handlers
 
         public override bool RequireWebSocket => true;
 
-        public override string Method => "GET";
+        public override string Method => HttpMethods.Get;
 
         protected override void Execute()
         {
@@ -34,6 +34,7 @@ namespace MediaStreaming.Handlers
 
             StreamSocket streamView = new StreamSocket($"stream-view-{streamId}", Socket);
             Caller.Sockets.Add(streamView);
+            Settings.ConnectStream?.Invoke(Caller, streamView);
 
             ScreenSharingStreams.FirstOrDefault(p => p.Id == streamId).Viewers.Add(Caller);
             WaitStream();
@@ -42,6 +43,7 @@ namespace MediaStreaming.Handlers
                 ScreenSharingStreams.FirstOrDefault(p => p.Id == streamId).Viewers.Remove(Caller);
             }
             Caller.Sockets.Remove(streamView);
+            Settings.CloseStream?.Invoke(Caller, streamView);
         }
     }
 }

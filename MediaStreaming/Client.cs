@@ -11,6 +11,8 @@ namespace MediaStreaming
         [JsonIgnore]
         private List<StreamSocket> _sockets;
         private DateTime _lastActive;
+        [JsonIgnore]
+        public string Token { get; set; }
         public string Id { get; }
         public string Room { get; set; }
         [JsonIgnore]

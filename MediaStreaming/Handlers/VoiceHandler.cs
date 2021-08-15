@@ -17,12 +17,13 @@ namespace MediaStreaming.Handlers
 
         public override bool RequireWebSocket => true;
 
-        public override string Method => "GET";
+        public override string Method => HttpMethods.Get;
 
         protected override void Execute()
         {
-            Caller.Sockets.Add(new StreamSocket("voice", Socket));
-
+            var stream = new StreamSocket("voice", Socket);
+            Caller.Sockets.Add(stream);
+            Settings.ConnectStream?.Invoke(Caller, stream);
             if (Clients.Any(p => p.GetStream("voice") != null && p.Room == Caller.Room && p.Id != Caller.Id))
             {
                 Notification.ConnectToRoom(Caller.Room, Caller);
@@ -34,6 +35,7 @@ namespace MediaStreaming.Handlers
 
             SendToOther("voice", "voice-listen", 98304);
             Notification.EndCall(Caller.Room, Caller);
+            Settings.CloseStream?.Invoke(Caller, stream);
             Caller.Room = null;
         }
     }

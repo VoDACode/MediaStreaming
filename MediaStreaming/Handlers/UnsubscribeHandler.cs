@@ -16,7 +16,7 @@ namespace MediaStreaming.Handlers
 
         public override bool RequireWebSocket => false;
 
-        public override string Method => "DELETE";
+        public override string Method => HttpMethods.Delete;
 
         protected override void Execute()
         {

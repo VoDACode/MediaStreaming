@@ -19,7 +19,7 @@ namespace MediaStreaming.Handlers
             StreamSocket stream = new StreamSocket("screen-stream", Socket);
             ScreenSharingStream screenSharingStream = new ScreenSharingStream(Caller, stream);
             Caller.Sockets.Add(stream);
-
+            Settings.ConnectStream?.Invoke(Caller, stream);
             ScreenSharingStreams.Add(screenSharingStream);
 
             Notification.StartScreenStream(Caller.Room, Caller, screenSharingStream);
@@ -28,6 +28,7 @@ namespace MediaStreaming.Handlers
 
             Notification.EndScreenStream(Caller.Room, Caller, screenSharingStream);
 
+            Settings.CloseStream?.Invoke(Caller, stream);
             ScreenSharingStreams.Remove(screenSharingStream);
         }
 

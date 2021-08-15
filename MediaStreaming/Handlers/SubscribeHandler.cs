@@ -16,7 +16,7 @@ namespace MediaStreaming.Handlers
 
         public override bool RequireWebSocket => false;
 
-        public override string Method => "POST";
+        public override string Method => HttpMethods.Post;
 
         protected override void Execute()
         {

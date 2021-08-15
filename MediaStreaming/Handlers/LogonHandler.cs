@@ -16,12 +16,14 @@ namespace MediaStreaming.Handlers
 
         public override bool RequireWebSocket => false;
 
-        public override string Method => "POST";
+        public override string Method => HttpMethods.Post;
 
         protected override void Execute()
         {
             var client = new Client(StringHelper.RandomString(64));
+            client.Token = Token;
             Clients.Add(client);
+            Settings.NewConnect?.Invoke(client);
             HttpContext.Response.StatusCode = StatusCodes.Status201Created;
             HttpContext.Response.WriteAsJsonAsync(client);
         }

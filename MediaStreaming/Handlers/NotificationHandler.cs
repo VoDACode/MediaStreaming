@@ -24,9 +24,12 @@ namespace MediaStreaming.Handlers
 
         protected override void Execute()
         {
-            Caller.Sockets.Add(new StreamSocket("notification", Socket));
+            var stream = new StreamSocket("notification", Socket);
+            Caller.Sockets.Add(stream);
+            Settings.ConnectStream?.Invoke(Caller, stream);
             Socket.SendAsync(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new { data = new { type = "start", data = "OK" } })), WebSocketMessageType.Text, true, CancellationToken.None);
             WaitStream();
+            Settings.CloseStream?.Invoke(Caller, stream);
             Clients.Remove(Caller);
         }
     }

@@ -1,6 +1,7 @@
 using MediaStreaming;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Net;
@@ -22,9 +23,24 @@ namespace MediaStreamingService
             }
 
             app.UseWebSockets();
-            app.UseMediaStreaming("ws", (context) =>
+            app.UseMediaStreaming("ws", new MediaStreamingSettings()
             {
-                return true;
+                CheckAccess = (Client client, string room) =>
+                {
+                    return true;
+                },
+                NewConnect = (Client client) =>
+                {
+
+                },
+                ClientChange = (Client client) =>
+                {
+
+                },
+                Auth = (string token) =>
+                {
+                    return true;
+                }
             });
 
             app.UseDefaultFiles();

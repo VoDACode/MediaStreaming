@@ -20,9 +20,12 @@ namespace MediaStreaming.Handlers
 
         protected override void Execute()
         {
-            Caller.Sockets.Add(new StreamSocket("video", Socket));
+            var stream = new StreamSocket("video", Socket);
+            Caller.Sockets.Add(stream);
+            Settings.ConnectStream?.Invoke(Caller, stream);
             Notification.StartStreamVideo(Caller);
             SendToOther("video", "video-listen", 16*1024);
+            Settings.CloseStream?.Invoke(Caller, stream);
             Notification.EndStreamVideo(Caller);
         }
     }

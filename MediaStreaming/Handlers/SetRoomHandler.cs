@@ -16,9 +16,14 @@ namespace MediaStreaming.Handlers
 
         protected override void Execute()
         {
-            Caller.Room = Room;
-            HttpContext.Response.StatusCode = StatusCodes.Status202Accepted;
-            HttpContext.Response.WriteAsync("Room edited!");
+            if (Settings.CheckAccess(Caller, Room))
+            {
+                Caller.Room = Room;
+                Settings.ClientChange?.Invoke(Caller);
+                sendHttpResponse("Room edited!", StatusCodes.Status202Accepted);
+            }
+            else
+                sendHttpResponse("Access denied!", StatusCodes.Status401Unauthorized);
         }
     }
 }
