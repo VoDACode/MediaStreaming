@@ -15,9 +15,9 @@ namespace MediaStreaming
     public delegate bool EventAuth(string token);
     public class MediaStreaming
     {
-        private static List<ScreenSharingStream> screenSharingViewers = new List<ScreenSharingStream>();
-        private static NotificationModule notification;
-        private static List<Client> clients = new List<Client>();
+        private List<ScreenSharingStream> screenSharingViewers = new List<ScreenSharingStream>();
+        private NotificationModule notification;
+        private List<Client> clients = new List<Client>();
         private readonly RequestDelegate _next;
         private string path;
         private MediaStreamingSettings settings;
