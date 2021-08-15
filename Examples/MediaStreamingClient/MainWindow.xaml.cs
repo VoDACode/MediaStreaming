@@ -35,7 +35,7 @@ namespace MediaStreamingClient
             InitializeComponent();
             //44326
             //5300
-            stream = new MediaStreamingClientCore.MediaStreamingClient(true, "localhost", 44326, "ws");
+            stream = new MediaStreamingClientCore.MediaStreamingClient(true, "localhost", 5300, "ws");
             //stream = new MediaStreamingClientCore.MediaStreamingClient(true, "10.0.1.20", 5300, "ws");
             stream.IgnoreSSL = true;
             //Main
