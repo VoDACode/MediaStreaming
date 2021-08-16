@@ -1,8 +1,8 @@
-﻿using MediaStreamingClientCore.Models;
+﻿using MediaStreaming.Client.Core.Models;
 using System.Net.WebSockets;
 using System.Text;
 
-namespace MediaStreamingClientCore.Modules
+namespace MediaStreaming.Client.Core.Modules
 {
     public delegate void NotificationAction(NotificationModel data);
     public sealed class NotificationModule : Module

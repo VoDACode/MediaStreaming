@@ -8,7 +8,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MediaStreamingClientCore
+namespace MediaStreaming.Client.Core
 {
     class ApiClient
     {

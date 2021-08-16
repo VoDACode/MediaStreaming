@@ -4,10 +4,10 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using MediaStreamingClientCore.Models;
+using MediaStreaming.Client.Core.Models;
 using NAudio.Wave;
 
-namespace MediaStreamingClientCore.Modules
+namespace MediaStreaming.Client.Core.Modules
 {
     public sealed class VoiceModule : Module
     {

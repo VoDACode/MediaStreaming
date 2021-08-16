@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MediaStreamingClientCore
+namespace MediaStreaming.Client.Core
 {
     public class Client
     {

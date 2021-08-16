@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MediaStreamingClientCore.Models
+namespace MediaStreaming.Client.Core.Models
 {
     public class NotificationModel
     {

@@ -1,6 +1,6 @@
 ﻿using System.Net.Sockets;
 
-namespace MediaStreamingClientCore
+namespace MediaStreaming.Client.Core
 {
     class DebugData
     {

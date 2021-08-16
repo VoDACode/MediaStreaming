@@ -1,4 +1,4 @@
-﻿using MediaStreamingClientCore.Models;
+﻿using MediaStreaming.Client.Core.Models;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -26,7 +26,7 @@ namespace MediaStreamingClient
     /// </summary>
     public partial class MainWindow : Window
     {
-        private MediaStreamingClientCore.MediaStreamingClient stream;
+        private MediaStreaming.Client.Core.MediaStreamingClient stream;
         private Window previewWindow = new Window();
         private System.Windows.Controls.Image previewImage = new System.Windows.Controls.Image();
 
@@ -35,8 +35,8 @@ namespace MediaStreamingClient
             InitializeComponent();
             //44326
             //5300
-            stream = new MediaStreamingClientCore.MediaStreamingClient(true, "localhost", 5300, "ws");
-            //stream = new MediaStreamingClientCore.MediaStreamingClient(true, "10.0.1.20", 5300, "ws");
+            stream = new MediaStreaming.Client.Core.MediaStreamingClient(true, "localhost", 5300, "ws");
+            //stream = new MediaStreaming.Client.Core.MediaStreamingClient(true, "10.0.1.20", 5300, "ws");
             stream.IgnoreSSL = true;
             //Main
             stream.OnStart += Stream_OnStart;

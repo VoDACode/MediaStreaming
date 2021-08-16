@@ -1,4 +1,4 @@
-﻿using MediaStreamingClientCore.Models;
+﻿using MediaStreaming.Client.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -11,7 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MediaStreamingClientCore.Modules
+namespace MediaStreaming.Client.Core.Modules
 {
     public delegate void AvtionUpdateScreen(Bitmap data);
     public sealed class ScreenSharingModule : Module

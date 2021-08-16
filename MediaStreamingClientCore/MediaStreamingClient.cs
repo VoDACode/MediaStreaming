@@ -6,10 +6,10 @@ using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Text;
-using MediaStreamingClientCore.Modules;
-using MediaStreamingClientCore.Models;
+using MediaStreaming.Client.Core.Modules;
+using MediaStreaming.Client.Core.Models;
 
-namespace MediaStreamingClientCore
+namespace MediaStreaming.Client.Core
 {
     public delegate void MediaNotification(ClientWebSocket socket, BytesList data);
     public class MediaStreamingClient

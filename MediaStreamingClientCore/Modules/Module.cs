@@ -1,4 +1,4 @@
-﻿using MediaStreamingClientCore.Models;
+﻿using MediaStreaming.Client.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MediaStreamingClientCore.Modules
+namespace MediaStreaming.Client.Core.Modules
 {
     public abstract class Module : IModule
     {

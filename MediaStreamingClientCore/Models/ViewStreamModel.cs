@@ -1,4 +1,4 @@
-﻿using MediaStreamingClientCore.Modules;
+﻿using MediaStreaming.Client.Core.Modules;
 using System;
 using System.Collections.Generic;
 using System.Net.Security;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MediaStreamingClientCore.Models
+namespace MediaStreaming.Client.Core.Models
 {
     public class ViewStreamModel : IModule
     {

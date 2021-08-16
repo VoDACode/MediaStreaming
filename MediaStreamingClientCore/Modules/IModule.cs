@@ -5,7 +5,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MediaStreamingClientCore.Modules
+namespace MediaStreaming.Client.Core.Modules
 {
     interface IModule
     {

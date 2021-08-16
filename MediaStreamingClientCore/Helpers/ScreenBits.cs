@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 
-namespace MediaStreamingClientCore.Helpers
+namespace MediaStreaming.Client.Core.Helpers
 {
     class ScreenBits
     {
