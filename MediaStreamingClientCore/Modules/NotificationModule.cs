@@ -1,4 +1,5 @@
 ﻿using MediaStreaming.Client.Core.Models;
+using MediaStreaming.Core;
 using System.Net.WebSockets;
 using System.Text;
 
@@ -31,7 +32,7 @@ namespace MediaStreaming.Client.Core.Modules
             startReadStream();
         }
 
-        private void NotificationModule_OnReceiveData(ClientWebSocket socket, BytesList bytes)
+        private void NotificationModule_OnReceiveData(MediaStreamingSocket socket, BytesList bytes)
         {
             var str = Encoding.UTF8.GetString(bytes.NewBuffer, 0, bytes.NewBuffer.Length);
             var notification = new NotificationModel(str);

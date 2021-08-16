@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MediaStreaming.Client.Core.Models;
+using MediaStreaming.Core;
 using NAudio.Wave;
 
 namespace MediaStreaming.Client.Core.Modules
@@ -85,7 +86,7 @@ namespace MediaStreaming.Client.Core.Modules
             base.Stop();
         }
 
-        private void VoiceModule_OnReceiveData(ClientWebSocket socket, BytesList data)
+        private void VoiceModule_OnReceiveData(MediaStreamingSocket socket, BytesList data)
         {
             try
             {

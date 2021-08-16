@@ -8,10 +8,11 @@ using System.Threading.Tasks;
 using System.Text;
 using MediaStreaming.Client.Core.Modules;
 using MediaStreaming.Client.Core.Models;
+using MediaStreaming.Core;
 
 namespace MediaStreaming.Client.Core
 {
-    public delegate void MediaNotification(ClientWebSocket socket, BytesList data);
+    public delegate void MediaNotification(MediaStreamingSocket socket, BytesList data);
     public class MediaStreamingClient
     {
         private bool _isHttps;

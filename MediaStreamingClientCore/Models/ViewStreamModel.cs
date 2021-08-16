@@ -1,4 +1,5 @@
 ﻿using MediaStreaming.Client.Core.Modules;
+using MediaStreaming.Core;
 using System;
 using System.Collections.Generic;
 using System.Net.Security;
@@ -15,7 +16,7 @@ namespace MediaStreaming.Client.Core.Models
         private bool _status;
         public string Id { get; }
         public Client Client { get; }
-        public ClientWebSocket ViewSocket { get; }
+        public MediaStreamingSocket ViewSocket { get; }
         private string token;
 
         public bool Status => _status;
@@ -33,7 +34,7 @@ namespace MediaStreaming.Client.Core.Models
             Client = client;
             ConnectWsRootUrl = connectWsRootUrl;
             this.token = token;
-            ViewSocket = new ClientWebSocket();
+            ViewSocket = new MediaStreamingSocket();
             ViewSocket.Options.RemoteCertificateValidationCallback = (object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) => IgnoreSSL;
         }
 

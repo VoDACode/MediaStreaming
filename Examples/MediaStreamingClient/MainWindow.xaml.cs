@@ -1,4 +1,5 @@
 ﻿using MediaStreaming.Client.Core.Models;
+using MediaStreaming.Core;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -81,7 +82,7 @@ namespace MediaStreamingClient
                 var img = new System.Windows.Controls.Image();
                 img.Width = 800;
                 img.Height = 600;
-                viewSream.OnReceiveData += (ClientWebSocket socket, BytesList bytes) =>
+                viewSream.OnReceiveData += (MediaStreamingSocket socket, BytesList bytes) =>
                 {
                     previewWindow.Dispatcher.Invoke(() =>
                     {
@@ -149,7 +150,7 @@ namespace MediaStreamingClient
             setStatus(true, ref ItemButton_Voice_Start, ref ItemButton_Voice_Stop, ref ItemLable_Voice_Status));
         }
 
-        private void Notification_OnReceiveData(ClientWebSocket socket, BytesList bytes)
+        private void Notification_OnReceiveData(MediaStreamingSocket socket, BytesList bytes)
         {
             Dispatcher.Invoke(() =>
             {

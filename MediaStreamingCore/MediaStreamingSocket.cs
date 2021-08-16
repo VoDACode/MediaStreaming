@@ -7,9 +7,9 @@ using System.IO;
 
 namespace MediaStreaming.Core
 {
-    public class ClientWebSocket : WebSocket
+    public class MediaStreamingSocket : WebSocket
     {
-        private System.Net.WebSockets.ClientWebSocket client;
+        private ClientWebSocket client;
 
         public override WebSocketCloseStatus? CloseStatus => client.CloseStatus;
 
@@ -20,11 +20,14 @@ namespace MediaStreaming.Core
         public override string SubProtocol => client.SubProtocol;
 
         public override void Abort() => client.Abort();
+        public ClientWebSocketOptions Options => client.Options;
 
-        public ClientWebSocket()
+        public MediaStreamingSocket()
         {
             client = new System.Net.WebSockets.ClientWebSocket();
         }
+
+        public Task ConnectAsync(Uri uri, CancellationToken cancellationToken) => client.ConnectAsync(uri, cancellationToken);
 
         public override Task CloseAsync(WebSocketCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken)
         {

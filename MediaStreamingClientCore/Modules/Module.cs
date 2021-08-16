@@ -1,4 +1,5 @@
 ﻿using MediaStreaming.Client.Core.Models;
+using MediaStreaming.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace MediaStreaming.Client.Core.Modules
 
         protected abstract string ModuleName { get; }
 
-        protected ClientWebSocket Socket = new ClientWebSocket();
+        protected MediaStreamingSocket Socket = new MediaStreamingSocket();
         protected Client Client => client;
         protected string Token => _token;
 

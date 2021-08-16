@@ -10,4 +10,8 @@
     <PackageReference Include="System.Text.Json" Version="6.0.0-preview.6.21352.12" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MediaStreamingCore\MediaStreamingCore.csproj" />
+  </ItemGroup>
+
 </Project>

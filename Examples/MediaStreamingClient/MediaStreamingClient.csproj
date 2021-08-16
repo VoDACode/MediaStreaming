@@ -12,7 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\MediaStreaming.Client.Core\MediaStreaming.Client.Core.csproj" />
+    <ProjectReference Include="..\..\MediaStreamingClientCore\MediaStreamingClientCore.csproj" />
+    <ProjectReference Include="..\..\MediaStreamingCore\MediaStreamingCore.csproj" />
   </ItemGroup>
 
 </Project>
