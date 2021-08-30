@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -36,15 +37,18 @@ namespace MediaStreamingClient
             InitializeComponent();
             //44326
             //5300
-            stream = new MediaStreaming.Client.Core.MediaStreamingClient(true, "localhost", 5300, "ws");
-            stream.IgnoreSSL = true;
-            //Main
-            stream.OnStart += Stream_OnStart;
-            stream.OnStop += Stream_OnStop;
+            ItemTextBox_Url.Text = "localhost";
+            ItemTextBox_Port.Text = "5300";
+            ItemTextBox_RootPath.Text = "ws";
         }
 
         private void ItemButton_Connect_Click(object sender, RoutedEventArgs e)
         {
+            stream = new MediaStreaming.Client.Core.MediaStreamingClient(true, ItemTextBox_Url.Text, uint.Parse(ItemTextBox_Port.Text), ItemTextBox_RootPath.Text, ItemTextBox_Token.Text);
+            stream.IgnoreSSL = true;
+            //Main
+            stream.OnStart += Stream_OnStart;
+            stream.OnStop += Stream_OnStop;
             try
             {
                 stream.Connect();
@@ -81,14 +85,14 @@ namespace MediaStreamingClient
                 var img = new System.Windows.Controls.Image();
                 img.Width = 800;
                 img.Height = 600;
-                viewSream.OnReceiveData += (ClientWebSocket socket, BytesList bytes) =>
+                viewSream.OnReceiveData += (ClientWebSocket socket, byte[] buffer) =>
                 {
                     previewWindow.Dispatcher.Invoke(() =>
                     {
                         try
                         {
                             BitmapImage bitmapimage = new BitmapImage();
-                            using (MemoryStream memory = new MemoryStream(bytes.NewBuffer, 0, bytes.NewBuffer.Length))
+                            using (MemoryStream memory = new MemoryStream(buffer, 0, buffer.Length))
                             {
                                 memory.Position = 0;
                                 bitmapimage.BeginInit();
@@ -149,11 +153,11 @@ namespace MediaStreamingClient
             setStatus(true, ref ItemButton_Voice_Start, ref ItemButton_Voice_Stop, ref ItemLable_Voice_Status));
         }
 
-        private void Notification_OnReceiveData(ClientWebSocket socket, BytesList bytes)
+        private void Notification_OnReceiveData(ClientWebSocket socket, byte[] buffer)
         {
             Dispatcher.Invoke(() =>
             {
-                var str = Encoding.UTF8.GetString(bytes.NewBuffer);
+                var str = Encoding.UTF8.GetString(buffer);
                 ItemStackPanel_Notification.Children.Add(new Label() { Content = str });
             });
         }
@@ -270,6 +274,12 @@ namespace MediaStreamingClient
         private void ItemButton_ScreenSharing_Stop_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void ItemTextBox_Port_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
         }
     }
 }
