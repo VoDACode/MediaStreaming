@@ -31,7 +31,7 @@ namespace MediaStreamingClient
         private MediaStreaming.Client.Core.MediaStreamingClient stream;
         private Window previewWindow = new Window();
         private System.Windows.Controls.Image previewImage = new System.Windows.Controls.Image();
-
+        
         public MainWindow()
         {
             InitializeComponent();
@@ -40,6 +40,7 @@ namespace MediaStreamingClient
             ItemTextBox_Url.Text = "localhost";
             ItemTextBox_Port.Text = "5300";
             ItemTextBox_RootPath.Text = "ws";
+            ItemTextBox_Room.Text = "main";
         }
 
         private void ItemButton_Connect_Click(object sender, RoutedEventArgs e)
@@ -58,7 +59,7 @@ namespace MediaStreamingClient
                 stream.Notification.OnReceiveData += Notification_OnReceiveData;
                 stream.Notification.OnStartScreenStream += Notification_OnStartScreenStream;
                 stream.Notification.Start();
-                stream.SetRoom("main");
+                stream.SetRoom(ItemTextBox_Room.Text);
                 //Voice
                 stream.Voice.OnStart += Voice_OnStart;
                 stream.Voice.OnStop += Voice_OnStop;
