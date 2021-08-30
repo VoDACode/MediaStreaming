@@ -32,9 +32,9 @@ namespace MediaStreaming.Client.Core.Modules
             startReadStream();
         }
 
-        private void NotificationModule_OnReceiveData(MediaStreamingSocket socket, BytesList bytes)
+        private void NotificationModule_OnReceiveData(ClientWebSocket socket, byte[] buffer)
         {
-            var str = Encoding.UTF8.GetString(bytes.NewBuffer, 0, bytes.NewBuffer.Length);
+            var str = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
             var notification = new NotificationModel(str);
             switch (notification.Type)
             {

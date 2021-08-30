@@ -1,4 +1,5 @@
 ﻿using MediaStreaming.Client.Core.Models;
+using MediaStreaming.Core;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Net.Security;
 using System.Net.WebSockets;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -20,7 +22,7 @@ namespace MediaStreaming.Client.Core.Modules
         private Screen selectedScreen;
         private Bitmap lastScreenData;
 
-        private ClientWebSocket ScreenStream = new ClientWebSocket();
+        private ClientWebSocket ScreenStream { get; set; } = new ClientWebSocket();
 
         public List<ViewStreamModel> ViewStreams { get; } = new List<ViewStreamModel>();
 
@@ -45,7 +47,6 @@ namespace MediaStreaming.Client.Core.Modules
         public override void Start()
         {
             ScreenStream.ConnectAsync(new Uri($"{ConnectWsRootUrl}/screen/stream?id={Client.Id}&token={Token}&room={Client.Room}"), CancellationToken.None).Wait();
-            //Socket.ConnectAsync(new Uri($"{ConnectWsRootUrl}/screen/view?id={Client.Id}&token={Token}&room={Client.Room}"), CancellationToken.None).Wait();
             _start();
             StartStream();
         }
@@ -62,25 +63,47 @@ namespace MediaStreaming.Client.Core.Modules
         {
             return Task.Factory.StartNew(() =>
             {
+                var screen = GetScreen();
+                ScreenStream.SendAsync(imageToByteArray(screen), WebSocketMessageType.Binary, true, CancellationToken.None);
+                
+                lastScreenData = screen;
                 while (Status)
                 {
-                    var screen = GetScreen();
+                    screen = GetScreen();
 
-                    if (screen != lastScreenData)
+                    if (IsViewPreview)
+                        UpdatePreview?.Invoke(screen);
+                    //sendFrame(screen);
+                    using (var stream = new MemoryStream())
                     {
-                        if (IsViewPreview)
-                            UpdatePreview?.Invoke(screen);
-
-                        using (var stream = new MemoryStream())
-                        {
-                            screen.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-                            var arr = stream.ToArray();
-                            ScreenStream.SendAsync(arr, WebSocketMessageType.Binary, true, CancellationToken.None).Wait();
-                        }
-                        lastScreenData = screen;
+                        screen.Save(stream, System.Drawing.Imaging.ImageFormat.Bmp);
+                        var arr = stream.ToArray();
+                        ScreenStream.SendAsync(arr, WebSocketMessageType.Binary, true, CancellationToken.None).Wait();
                     }
-                    Task.Delay(50);
+                    lastScreenData = screen;
+                    Task.Delay(34);
                 }
+            });
+        }
+
+        private async void sendFrame(Bitmap bitmap)
+        {
+            //ScreenStream.SendAsync(arr, WebSocketMessageType.Binary, true, CancellationToken.None).Wait();
+            await Task.Run(async () =>
+            {
+                var newImg = imageToByteArray(bitmap);
+                var oldImg = imageToByteArray(lastScreenData);
+                for(int i = 0; i < newImg.Length; i++)
+                {
+                    if(newImg[i] != oldImg[i])
+                    {
+                        byte[] data = new byte[sizeof(int) + sizeof(byte)];
+                        BitConverter.GetBytes(i).CopyTo(data, 0);
+                        data[sizeof(int)] = newImg[i];
+                        await ScreenStream.SendAsync(data, WebSocketMessageType.Binary, false, CancellationToken.None);
+                    }
+                }
+                await ScreenStream.SendAsync(BitConverter.GetBytes(-1), WebSocketMessageType.Binary, true, CancellationToken.None);
             });
         }
 
@@ -92,6 +115,15 @@ namespace MediaStreaming.Client.Core.Modules
                 graphics.CopyFromScreen(new Point(0, 0), new Point(0, 0), new Size(selectedScreen.WorkingArea.Width, selectedScreen.WorkingArea.Height));
             }
             return bitmap;
+        }
+
+        private static byte[] imageToByteArray(Image img)
+        {
+            using (var stream = new MemoryStream())
+            {
+                img.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+                return stream.ToArray();
+            }
         }
     }
 }

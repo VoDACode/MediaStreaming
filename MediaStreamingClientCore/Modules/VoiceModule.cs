@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediaStreaming.Client.Core.Models;
 using MediaStreaming.Core;
+using NAudio.Codecs;
 using NAudio.Wave;
 
 namespace MediaStreaming.Client.Core.Modules
@@ -14,7 +15,7 @@ namespace MediaStreaming.Client.Core.Modules
     {
         private DebugData debug;
         protected override string ModuleName => "voice";
-        private WaveInEvent input;
+        private WaveInEvent input = new WaveInEvent();
         private WaveOutEvent output;
         private BufferedWaveProvider bufferStream;
         private ClientWebSocket VoiceStream;
@@ -30,6 +31,14 @@ namespace MediaStreaming.Client.Core.Modules
             }
         }
 
+        public int DeviceNumber { 
+            get => input.DeviceNumber; 
+            set 
+            {
+                input.DeviceNumber = value;
+            }
+        }
+
         public VoiceModule(string ConnectWsHost, ref Client client)
             : base(ConnectWsHost, ref client)
         {
@@ -42,7 +51,7 @@ namespace MediaStreaming.Client.Core.Modules
             // debug.Connect();
 
             //создаем поток для записи нашей речи
-            input = new WaveInEvent();
+            input.DeviceNumber = 0;
             //определяем его формат - частота дискретизации 22000 Гц, ширина сэмпла - 16 бит, 1 канал - моно
             input.WaveFormat = new WaveFormat(32000, 1);
             //добавляем код обработки нашего голоса, поступающего на микрофон
@@ -86,11 +95,13 @@ namespace MediaStreaming.Client.Core.Modules
             base.Stop();
         }
 
-        private void VoiceModule_OnReceiveData(MediaStreamingSocket socket, BytesList data)
+        private void VoiceModule_OnReceiveData(ClientWebSocket socket, byte[] buffer)
         {
             try
             {
-                bufferStream.AddSamples(data.NewBuffer, 0, data.NewBuffer.Length);
+                //var decode = DecodeSamples(buffer);
+                //bufferStream.AddSamples(decode, 0, decode.Length);
+                bufferStream.AddSamples(buffer, 0, buffer.Length);
             }
             catch
             { }
@@ -102,6 +113,8 @@ namespace MediaStreaming.Client.Core.Modules
             {
                 if (ProcessData(e, sensitivity))
                 {
+                    //var encode = EncodeSamples(e.Buffer);
+                    //VoiceStream.SendAsync(encode, WebSocketMessageType.Binary, true, CancellationToken.None);
                     VoiceStream.SendAsync(e.Buffer, WebSocketMessageType.Binary, true, CancellationToken.None);
                     debug.Send(e.Buffer);
                 }
@@ -125,6 +138,30 @@ namespace MediaStreaming.Client.Core.Modules
             }
             Sum2 /= Count;
             return (Tr || Sum2 > porog);
+        }
+
+        private byte[] EncodeSamples(byte[] data)
+        {
+            byte[] encoded = new byte[data.Length / 2];
+            int outIndex = 0;
+
+            for (int n = 0; n < data.Length; n += 2)
+                encoded[outIndex++] = MuLawEncoder.LinearToMuLawSample(BitConverter.ToInt16(data, n));
+
+            return encoded;
+        }
+
+        private byte[] DecodeSamples(byte[] data)
+        {
+            byte[] decoded = new byte[data.Length * 2];
+            int outIndex = 0;
+            for (int n = 0; n < data.Length; n++)
+            {
+                short decodedSample = MuLawDecoder.MuLawToLinearSample(data[n]);
+                decoded[outIndex++] = (byte)(decodedSample & 0xFF);
+                decoded[outIndex++] = (byte)(decodedSample >> 8);
+            }
+            return decoded;
         }
     }
 }

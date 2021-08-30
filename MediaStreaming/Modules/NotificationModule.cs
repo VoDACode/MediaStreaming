@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using MediaStreaming.Core;
 
 namespace MediaStreaming.Modules
 {
@@ -30,7 +31,7 @@ namespace MediaStreaming.Modules
             foreach(var recipient in recipients)
             {
                 recipient.Client.NotificationStream.Socket.SendAsync(buffer: Encoding.UTF8.GetBytes(JsonSerializer.Serialize(contect)),
-                                                                    messageType: WebSocketMessageType.Text,
+                                                                    WebSocketMessageType.Binary,
                                                                     endOfMessage: true,
                                                                     cancellationToken: CancellationToken.None);
             }
@@ -65,7 +66,7 @@ namespace MediaStreaming.Modules
                             }
                         };
                         recipient.Client.NotificationStream.Socket.SendAsync(buffer: Encoding.UTF8.GetBytes(JsonSerializer.Serialize(contect)),
-                                                                           messageType: WebSocketMessageType.Text,
+                                                                           WebSocketMessageType.Binary,
                                                                            endOfMessage: true,
                                                                            cancellationToken: CancellationToken.None);
                     }
@@ -92,7 +93,7 @@ namespace MediaStreaming.Modules
                     }
                 };
                 recipient.NotificationStream.Socket.SendAsync(buffer: Encoding.UTF8.GetBytes(JsonSerializer.Serialize(contect)),
-                                                                   messageType: WebSocketMessageType.Text,
+                                                                   WebSocketMessageType.Text,
                                                                    endOfMessage: true,
                                                                    cancellationToken: CancellationToken.None);
             }
@@ -116,7 +117,7 @@ namespace MediaStreaming.Modules
                     }
                 };
                 recipient.NotificationStream.Socket.SendAsync(buffer: Encoding.UTF8.GetBytes(JsonSerializer.Serialize(contect)),
-                                                                   messageType: WebSocketMessageType.Text,
+                                                                   WebSocketMessageType.Text,
                                                                    endOfMessage: true,
                                                                    cancellationToken: CancellationToken.None);
             }
@@ -144,7 +145,7 @@ namespace MediaStreaming.Modules
                     }
                 };
                 recipient.NotificationStream.Socket.SendAsync(buffer: Encoding.UTF8.GetBytes(JsonSerializer.Serialize(contect)),
-                                                                   messageType: WebSocketMessageType.Text,
+                                                                   WebSocketMessageType.Text,
                                                                    endOfMessage: true,
                                                                    cancellationToken: CancellationToken.None);
             }
@@ -168,7 +169,7 @@ namespace MediaStreaming.Modules
                     }
                 };
                 recipient.NotificationStream.Socket.SendAsync(buffer: Encoding.UTF8.GetBytes(JsonSerializer.Serialize(contect)),
-                                                                   messageType: WebSocketMessageType.Text,
+                                                                   WebSocketMessageType.Text,
                                                                    endOfMessage: true,
                                                                    cancellationToken: CancellationToken.None);
             }
@@ -194,7 +195,7 @@ namespace MediaStreaming.Modules
                     }
                 };
                 recipient.NotificationStream.Socket.SendAsync(buffer: Encoding.UTF8.GetBytes(JsonSerializer.Serialize(contect)),
-                                                                   messageType: WebSocketMessageType.Text,
+                                                                   WebSocketMessageType.Text,
                                                                    endOfMessage: true,
                                                                    cancellationToken: CancellationToken.None);
             }
@@ -218,7 +219,7 @@ namespace MediaStreaming.Modules
                     }
                 };
                 recipient.NotificationStream.Socket.SendAsync(buffer: Encoding.UTF8.GetBytes(JsonSerializer.Serialize(contect)),
-                                                                   messageType: WebSocketMessageType.Text,
+                                                                   WebSocketMessageType.Text,
                                                                    endOfMessage: true,
                                                                    cancellationToken: CancellationToken.None);
             }

@@ -23,7 +23,7 @@ namespace MediaStreaming.Client.Core.Modules
 
         protected abstract string ModuleName { get; }
 
-        protected MediaStreamingSocket Socket = new MediaStreamingSocket();
+        protected ClientWebSocket Socket { get; set; } = new ClientWebSocket();
         protected Client Client => client;
         protected string Token => _token;
 
@@ -81,24 +81,25 @@ namespace MediaStreaming.Client.Core.Modules
         /// <returns></returns>
         protected Task startReadStream(uint buffetSize = 150)
         {
-            return Task.Factory.StartNew(() =>
+            return Task.Run(() =>
             {
                 try
                 {
                     var buffer = new byte[1024 * buffetSize];
-                    BytesList bytes = new BytesList();
-                    bytes.InitArrays(1024 * buffetSize);
                     WebSocketReceiveResult result = Socket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None).Result;
                     while (!result.CloseStatus.HasValue)
                     {
-                        bytes.SetBuffer(buffer, result.Count);
-                        OnReceiveData?.Invoke(Socket, bytes);
+                        OnReceiveData?.Invoke(Socket, buffer);
                         result = Socket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None).Result;
                     }
                 }
                 catch(Exception ex)
-                { }
+                {
+                    Console.WriteLine(ex);
+                    return false;
+                }
                 _stop();
+                return true;
             });    
         }
     }

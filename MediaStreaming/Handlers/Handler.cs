@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
+using MediaStreaming.Core;
 
 namespace MediaStreaming.Handlers
 {
@@ -175,7 +176,7 @@ namespace MediaStreaming.Handlers
                     {
                         try
                         {
-                            addressee.GetStream(OutputSocket).Socket.SendAsync(new ArraySegment<byte>(buffer, 0, result.Count), result.MessageType, result.EndOfMessage, CancellationToken.None);
+                            addressee.GetStream(OutputSocket).Socket.SendAsync(new ArraySegment<byte>(buffer, 0, result.Count), WebSocketMessageType.Binary, result.EndOfMessage, CancellationToken.None);
                         }
                         catch
                         {
@@ -213,7 +214,7 @@ namespace MediaStreaming.Handlers
                 {
                     try
                     {
-                        addressee.GetStream(streamName).Socket.SendAsync(new ArraySegment<byte>(buffer, 0, result.Count), result.MessageType, result.EndOfMessage, CancellationToken.None);
+                        addressee.GetStream(streamName).Socket.SendAsync(new ArraySegment<byte>(buffer, 0, result.Count), WebSocketMessageType.Binary, result.EndOfMessage, CancellationToken.None);
                     }
                     catch
                     {

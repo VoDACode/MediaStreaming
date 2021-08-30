@@ -12,7 +12,7 @@ using MediaStreaming.Core;
 
 namespace MediaStreaming.Client.Core
 {
-    public delegate void MediaNotification(MediaStreamingSocket socket, BytesList data);
+    public delegate void MediaNotification(ClientWebSocket socket, byte[] buffer);
     public class MediaStreamingClient
     {
         private bool _isHttps;

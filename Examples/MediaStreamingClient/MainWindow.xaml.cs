@@ -37,7 +37,6 @@ namespace MediaStreamingClient
             //44326
             //5300
             stream = new MediaStreaming.Client.Core.MediaStreamingClient(true, "localhost", 5300, "ws");
-            //stream = new MediaStreaming.Client.Core.MediaStreamingClient(true, "10.0.1.20", 5300, "ws");
             stream.IgnoreSSL = true;
             //Main
             stream.OnStart += Stream_OnStart;
@@ -82,7 +81,7 @@ namespace MediaStreamingClient
                 var img = new System.Windows.Controls.Image();
                 img.Width = 800;
                 img.Height = 600;
-                viewSream.OnReceiveData += (MediaStreamingSocket socket, BytesList bytes) =>
+                viewSream.OnReceiveData += (ClientWebSocket socket, BytesList bytes) =>
                 {
                     previewWindow.Dispatcher.Invoke(() =>
                     {
@@ -150,7 +149,7 @@ namespace MediaStreamingClient
             setStatus(true, ref ItemButton_Voice_Start, ref ItemButton_Voice_Stop, ref ItemLable_Voice_Status));
         }
 
-        private void Notification_OnReceiveData(MediaStreamingSocket socket, BytesList bytes)
+        private void Notification_OnReceiveData(ClientWebSocket socket, BytesList bytes)
         {
             Dispatcher.Invoke(() =>
             {

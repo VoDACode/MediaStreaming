@@ -16,7 +16,7 @@ namespace MediaStreaming.Client.Core.Models
         private bool _status;
         public string Id { get; }
         public Client Client { get; }
-        public MediaStreamingSocket ViewSocket { get; }
+        public ClientWebSocket ViewSocket { get; }
         private string token;
 
         public bool Status => _status;
@@ -34,7 +34,7 @@ namespace MediaStreaming.Client.Core.Models
             Client = client;
             ConnectWsRootUrl = connectWsRootUrl;
             this.token = token;
-            ViewSocket = new MediaStreamingSocket();
+            ViewSocket = new ClientWebSocket();
             ViewSocket.Options.RemoteCertificateValidationCallback = (object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) => IgnoreSSL;
         }
 
@@ -48,18 +48,17 @@ namespace MediaStreaming.Client.Core.Models
 
         private Task StartReadStream()
         {
-            return Task.Factory.StartNew(() =>
+            return Task.Run(() =>
             {
+                var buffer = new byte[1024 * 150];
+                WebSocketReceiveResult result = ViewSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None).Result;
+                
                 try
                 {
-                    var buffer = new byte[1024 * 150];
-                    BytesList bytes = new BytesList();
-                    bytes.InitArrays(1024 * 150);
-                    WebSocketReceiveResult result = ViewSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None).Result;
+
                     while (!result.CloseStatus.HasValue)
                     {
-                        bytes.SetBuffer(buffer, result.Count);
-                        OnReceiveData?.Invoke(ViewSocket, bytes);
+                        OnReceiveData?.Invoke(ViewSocket, buffer);
                         result = ViewSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None).Result;
                     }
                 }
