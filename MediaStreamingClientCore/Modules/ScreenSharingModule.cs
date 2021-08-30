@@ -64,7 +64,7 @@ namespace MediaStreaming.Client.Core.Modules
             return Task.Factory.StartNew(() =>
             {
                 var screen = GetScreen();
-                ScreenStream.SendAsync(imageToByteArray(screen), WebSocketMessageType.Binary, true, CancellationToken.None);
+                //ScreenStream.SendAsync(imageToByteArray(screen), WebSocketMessageType.Binary, true, CancellationToken.None);
                 
                 lastScreenData = screen;
                 while (Status)
