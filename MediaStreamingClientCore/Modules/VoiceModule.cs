@@ -7,19 +7,20 @@ using System.Threading.Tasks;
 using MediaStreaming.Client.Core.Models;
 using MediaStreaming.Core;
 using NAudio.Codecs;
+using NAudio.CoreAudioApi;
 using NAudio.Wave;
 
 namespace MediaStreaming.Client.Core.Modules
 {
     public sealed class VoiceModule : Module
     {
-        private DebugData debug;
         protected override string ModuleName => "voice";
         private WaveInEvent input = new WaveInEvent();
         private WaveOutEvent output;
         private BufferedWaveProvider bufferStream;
         private ClientWebSocket VoiceStream;
         private double sensitivity = 0.02;
+        private MMDeviceEnumerator deviceEnumerator = new MMDeviceEnumerator();
         public double Sensitivity
         {
             get => sensitivity;
@@ -39,17 +40,16 @@ namespace MediaStreaming.Client.Core.Modules
             }
         }
 
+        public MMDeviceCollection MDevices { get => deviceEnumerator.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active); }
+
         public VoiceModule(string ConnectWsHost, ref Client client)
             : base(ConnectWsHost, ref client)
         {
             VoiceStream = new ClientWebSocket();
-            debug = new DebugData("127.0.0.1", 9090);
         }
 
         public override void Start()
         {
-            // debug.Connect();
-
             //создаем поток для записи нашей речи
             input.DeviceNumber = 0;
             //определяем его формат - частота дискретизации 22000 Гц, ширина сэмпла - 16 бит, 1 канал - моно
@@ -99,9 +99,8 @@ namespace MediaStreaming.Client.Core.Modules
         {
             try
             {
-                //var decode = DecodeSamples(buffer);
-                //bufferStream.AddSamples(decode, 0, decode.Length);
-                bufferStream.AddSamples(buffer, 0, buffer.Length);
+                var decode = DecodeSamples(buffer);
+                bufferStream.AddSamples(decode, 0, decode.Length);
             }
             catch
             { }
@@ -113,10 +112,8 @@ namespace MediaStreaming.Client.Core.Modules
             {
                 if (ProcessData(e, sensitivity))
                 {
-                    //var encode = EncodeSamples(e.Buffer);
-                    //VoiceStream.SendAsync(encode, WebSocketMessageType.Binary, true, CancellationToken.None);
-                    VoiceStream.SendAsync(e.Buffer, WebSocketMessageType.Binary, true, CancellationToken.None);
-                    debug.Send(e.Buffer);
+                    var encode = EncodeSamples(e.Buffer);
+                    VoiceStream.SendAsync(encode, WebSocketMessageType.Binary, true, CancellationToken.None);
                 }
             }
             catch (Exception ex)

@@ -106,6 +106,7 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto"/>
                             <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
                         <Grid Grid.Row="0" Margin="5">
                             <Grid.ColumnDefinitions>
@@ -115,7 +116,17 @@
                             <Button Grid.Column="0" Margin="2" Width="100" Name="ItemButton_Voice_Start" Click="ItemButton_Voice_Start_Click">Start</Button>
                             <Button Grid.Column="1" Margin="2" Width="100" Name="ItemButton_Voice_Stop" Click="ItemButton_Voice_Stop_Click">Stop</Button>
                         </Grid>
-                        <Grid Grid.Row="1" Margin="5">
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0">Microphone:</Label>
+                            <ComboBox Grid.Column="1" Width="200"
+                                      Name="ItemComboBoxMicrophone"
+                                      SelectionChanged="ItemComboBoxMicrophone_SelectionChanged"></ComboBox>
+                        </Grid>
+                        <Grid Grid.Row="2" Margin="5">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto"/>
                                 <ColumnDefinition Width="auto"/>

@@ -47,12 +47,20 @@ namespace MediaStreamingClient
         {
             stream = new MediaStreaming.Client.Core.MediaStreamingClient(true, ItemTextBox_Url.Text, uint.Parse(ItemTextBox_Port.Text), ItemTextBox_RootPath.Text, ItemTextBox_Token.Text);
             stream.IgnoreSSL = true;
+
             //Main
             stream.OnStart += Stream_OnStart;
             stream.OnStop += Stream_OnStop;
             try
             {
                 stream.Connect();
+
+                ItemComboBoxMicrophone.Items.Clear();
+                foreach (var microphone in stream.Voice.MDevices)
+                {
+                    ItemComboBoxMicrophone.Items.Add(new Label() { Content = $"{microphone.FriendlyName}" });
+                }
+                ItemComboBoxMicrophone.SelectedIndex = 0;
 
                 //Notification
                 stream.Notification.OnStart += Notification_OnStart;
@@ -281,6 +289,12 @@ namespace MediaStreamingClient
         {
             Regex regex = new Regex("[^0-9]+");
             e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private void ItemComboBoxMicrophone_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var index = (sender as ComboBox).SelectedIndex;
+            stream.Voice.DeviceNumber = index;
         }
     }
 }
